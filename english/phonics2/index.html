@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>短母音星球</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+body{margin:0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:linear-gradient(160deg,#e3fff3,#fff6d6 50%,#d9f3ff);min-height:100vh;color:#333}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;background:#4cc9a6;color:#fff;box-shadow:0 4px 0 #2fa585}
+header h1{margin:0;font-size:26px;text-align:center;flex:1}
+.stars{font-size:22px;background:#fff;color:#f39c12;border-radius:30px;padding:4px 14px;font-weight:bold;white-space:nowrap}
+.btn{border:none;border-radius:22px;font-size:20px;font-weight:bold;padding:10px 18px;cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.18);font-family:inherit;text-decoration:none;display:inline-block;background:#fff;color:#555}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.home{color:#2fa585}
+main{padding:14px 16px 40px;max-width:1100px;margin:auto}
+.hide{display:none!important}
+.intro{text-align:center;font-size:19px;color:#555;margin:6px 0 16px}
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.unit{border-radius:26px;padding:16px;color:#fff;cursor:pointer;box-shadow:0 7px 0 rgba(0,0,0,.15);text-align:center;transition:transform .15s}
+.unit:hover{transform:translateY(-3px) rotate(-1deg)}
+.unit .emo{font-size:46px;line-height:1.2}
+.unit b{display:block;font-size:24px}
+.unit .fam{font-size:22px;font-family:Arial,sans-serif;font-weight:bold;margin:4px 0}
+.unit .prog{font-size:16px;background:rgba(255,255,255,.3);border-radius:20px;padding:2px 10px;display:inline-block;margin-top:4px}
+.u1{background:#ff7aa2}.u2{background:#ff9f6b}.u3{background:#ffb347}.u4{background:#4cc9a6}.u5{background:#3fb5c9}.u6{background:#5aa9ff}.u7{background:#a77bff}.u8{background:#e86fd0}
+.utitle{text-align:center;margin:4px 0 10px}
+.utitle h2{margin:0;font-size:28px}
+.utitle .fam{font-family:Arial,sans-serif;font-size:22px;color:#666}
+nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 16px}
+nav .btn.on{background:#ffb347;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.tile{background:#fff;border-radius:22px;padding:10px 6px;text-align:center;cursor:pointer;box-shadow:0 5px 0 #ddd;border:4px solid transparent}
+.tile .e{font-size:46px;line-height:1.2}
+.tile .w{font-size:28px;font-weight:bold;font-family:"Comic Sans MS","Arial Rounded MT Bold",Arial,sans-serif}
+.tile .w i{font-style:normal;color:#ff6b8b}
+.tile .zh{font-size:16px;color:#888}
+.tile.on{border-color:#ffb347;animation:pop .4s}
+.hf .w{font-size:24px}.hf .s{font-size:17px;font-family:Arial,sans-serif;color:#555;margin-top:4px}
+.sec{font-size:22px;margin:18px 0 8px;padding:6px 16px;border-radius:16px;display:inline-block;color:#fff;background:#8d99ae}
+@keyframes pop{50%{transform:scale(1.12)}}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.shake{animation:shake .3s}
+.panel{background:#fff;border-radius:28px;padding:18px;text-align:center;box-shadow:0 6px 0 #eee;margin:0 auto 16px;max-width:620px}
+.panel p{font-size:19px;margin:4px 0 12px;color:#555}
+.panel .e{font-size:90px;line-height:1.1}
+.word{font-size:56px;font-weight:bold;font-family:"Comic Sans MS","Arial Rounded MT Bold",Arial,sans-serif;letter-spacing:4px;margin:6px 0}
+.word .blank{display:inline-block;min-width:44px;border-bottom:5px solid #ffb347;color:#ff6b8b}
+.sent{font-size:28px;font-family:Arial,sans-serif;font-weight:bold;line-height:1.5;margin:8px 0}
+.sent .blank{display:inline-block;min-width:90px;border-bottom:4px solid #ffb347;color:#ff6b8b}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:520px;margin:auto}
+.opts .tile .e{font-size:64px}
+.letters{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.letters .tile{min-width:96px}
+.letters .tile .w{font-size:44px}
+.say{background:#5aa9ff;color:#fff}
+.score{font-size:18px;color:#888;margin-top:12px;text-align:center}
+.note{font-size:15px;color:#888;text-align:center;margin-top:24px}
+.cheer{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);font-size:80px;pointer-events:none;opacity:0;transition:opacity .2s}
+.cheer.show{opacity:1}
+@media (max-width:520px){header h1{font-size:20px}.btn{font-size:17px;padding:8px 12px}.grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))}.tile .w{font-size:24px}.word{font-size:44px}.sent{font-size:22px}}
+</style>
+</head>
+<body>
+<header><a class="btn home" id="back" href="../../">🪐 星球</a><h1 id="ttl">🐱 短母音星球</h1><span class="stars">⭐ <span id="star">0</span></span></header>
+<main>
+<section id="v-home">
+<p class="intro">自然發音第 2 冊・短母音 a e i o u<br>選一個單元開始！</p>
+<div class="units" id="units"></div>
+</section>
+<section id="v-unit" class="hide">
+<div class="utitle"><h2 id="uname"></h2><div class="fam" id="ufam"></div></div>
+<nav id="tabs">
+<button class="btn on" data-m="cards">📖 單字卡</button>
+<button class="btn" data-m="listen">👂 聽聽看</button>
+<button class="btn" data-m="spell">🔤 拼拼看</button>
+<button class="btn" data-m="sent">💬 句子</button>
+</nav>
+<div id="m-cards"></div>
+<div id="m-game" class="hide">
+<div class="panel" id="qpanel"></div>
+<div id="qopts"></div>
+<div class="score" id="qscore"></div>
+</div>
+</section>
+<p class="note">點一下就會唸英文（使用裝置內建語音；沒有聲音的話，請確認手機沒有靜音）</p>
+</main>
+<div class="cheer" id="cheer">🎉</div>
+<script>
+// 單字依課本順序：[英文, 表情圖, 中文]
+var UNITS=[
+ {n:'Unit 1',v:'a',fam:'a, am, an',e:'🐱',w:[['ax','🪓','斧頭'],['ant','🐜','螞蟻'],['cat','🐱','貓'],['yak','🐂','犛牛'],['ram','🐏','公羊'],['yam','🍠','山藥'],['dam','🏞️','水壩'],['jam','🍓','果醬'],['man','👨','男人'],['pan','🍳','平底鍋'],['can','🥫','罐頭'],['fan','🪭','扇子']],
+  hf:[['at','They are at the park.','🌳'],['on','The apple is on the table.','🍎'],['for','This is for you.','🎁']]},
+ {n:'Unit 2',v:'a',fam:'ad, ag, ap, at',e:'🧢',w:[['dad','👨‍👧','爸爸'],['pad','📒','便條本'],['bag','🎒','袋子'],['rag','🧽','抹布'],['cap','🧢','棒球帽'],['map','🗺️','地圖'],['nap','😴','小睡'],['tap','🚰','水龍頭'],['bat','🏏','球棒'],['rat','🐀','老鼠'],['hat','👒','帽子'],['mat','🧘','墊子']],
+  hf:[['day','It is a sunny day.','☀️'],['she','She is my mom.','👩'],['we','We are happy.','😄']]},
+ {n:'Unit 3',v:'e',fam:'et, en, …',e:'🐔',w:[['web','🕸️','蜘蛛網'],['egg','🥚','蛋'],['vet','🩺','獸醫'],['ten','🔟','十'],['jet','✈️','噴射機'],['net','🥅','網子'],['wet','💦','濕的'],['pet','🐹','寵物'],['hen','🐔','母雞'],['pen','🖊️','筆'],['bed','🛏️','床']],
+  hf:[['in','The dog is in the box.','📦'],['go','May I go to the bathroom?','🚻'],['to','They walk to school.','🏫']]},
+ {n:'Unit 4',v:'i',fam:'ip, ib, id',e:'👄',w:[['hip','🩳','屁股'],['ink','🖋️','墨水'],['zip','💨','咻地衝'],['in','📥','在裡面'],['lip','👄','嘴唇'],['tip','☝️','指尖'],['sip','🧃','小口喝'],['rip','📄','撕破'],['bib','👶','圍兜'],['rib','🦴','肋骨'],['kid','🧒','小孩'],['lid','🍲','鍋蓋']],
+  hf:[['can','I can draw.','🖍️'],['open','Open your book.','📖'],['need','It needs some water.','🌱']]},
+ {n:'Unit 5',v:'i',fam:'in, ig, it, ix',e:'🐠',w:[['pin','🧷','別針'],['fin','🐠','魚鰭'],['bin','🗑️','垃圾桶'],['win','🏆','贏'],['fig','🟣','無花果'],['wig','💇','假髮'],['big','🐋','大的'],['dig','⛏️','挖'],['pit','🍑','果核'],['hit','⚾','打擊'],['six','6️⃣','六'],['mix','🥣','攪拌']],
+  hf:[['help','Let me help you.','🤝'],['under','The dog is under the chair.','🪑'],['now','Come here now.','👋']]},
+ {n:'Unit 6',v:'o',fam:'o, ot, op',e:'🦊',w:[['fox','🦊','狐狸'],['log','🪵','木頭'],['ox','🐃','公牛'],['rod','🎣','釣竿'],['pot','🫕','鍋子'],['hot','🥵','熱的'],['cot','🏕️','行軍床'],['dot','⚫','點點'],['top','🌀','陀螺'],['mop','🧹','拖把'],['hop','🐸','跳'],['pop','💥','啵！爆開']],
+  hf:[["doesn't","My brother doesn't like cats.",'🙅'],['to','We go to school.','🏫'],['gets','Tom gets a cake.','🎂']]},
+ {n:'Unit 7',v:'u',fam:'u, ug, ud, up',e:'☀️',w:[['sun','☀️','太陽'],['up','⬆️','向上'],['jug','🫗','水壺'],['hug','🤗','擁抱'],['bug','🐛','蟲'],['rug','🧶','地毯'],['mug','☕','馬克杯'],['bud','🌷','花苞'],['mud','🟤','泥巴'],['pup','🐶','小狗'],['cup','🥤','杯子']],
+  hf:[['there','There is a boy.','👦'],['some','I have some books.','📚'],['sad','Jen is sad.','😢'],['happy','Ben is a happy boy.','😊']]},
+ {n:'Unit 8',v:'u',fam:'ut, ub, um, un',e:'🐻',w:[['nut','🌰','堅果'],['hut','🛖','小屋'],['cut','🩹','傷口'],['cub','🐻','小熊'],['tub','🛁','浴缸'],['gum','🍬','口香糖'],['hum','🎵','哼歌'],['bun','🍞','小圓麵包'],['run','🏃','跑'],['fun','🥳','好玩']],
+  hf:[['are','There are two dogs.','🐕'],['friends','I have some friends.','🧑‍🤝‍🧑'],['they','They read books.','📚'],['make','We make masks.','🎭'],['yum','I like apples. Yum!','😋']]}
+];
+var VOW='aeiou',CONS='bcdfghjklmnprstvwxyz';
+var store={};try{store=JSON.parse(localStorage.getItem('kp-ph2')||'{}')}catch(e){}
+function save(){try{localStorage.setItem('kp-ph2',JSON.stringify(store))}catch(e){}}
+store.stars=store.stars||0;store.u=store.u||{};
+var starEl=document.getElementById('star');starEl.textContent=store.stars;
+function addStar(ui){store.stars++;store.u[ui]=(store.u[ui]||0)+1;starEl.textContent=store.stars;save()}
+// 語音
+var voice=null;
+function pickVoice(){var vs=speechSynthesis.getVoices().filter(function(v){return /^en[-_]/i.test(v.lang)});voice=vs.find(function(v){return /en[-_]US/i.test(v.lang)&&/female|samantha|aria|jenny|google us/i.test(v.name)})||vs.find(function(v){return /en[-_]US/i.test(v.lang)})||vs[0]||null}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function say(t,rate){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='en-US';if(voice)u.voice=voice;u.rate=rate||.75;speechSynthesis.speak(u)}
+function flash(el){el.classList.remove('on');void el.offsetWidth;el.classList.add('on')}
+function shake(el){el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')}
+function cheer(){var c=document.getElementById('cheer');c.textContent=['🎉','⭐','👏','🌟','🥳'][Math.random()*5|0];c.classList.add('show');setTimeout(function(){c.classList.remove('show')},700)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.random()*(i+1)|0,t=a[i];a[i]=a[j];a[j]=t}return a}
+function el(tag,cls,html){var d=document.createElement(tag);if(cls)d.className=cls;if(html!=null)d.innerHTML=html;return d}
+// 把短母音標成粉紅色
+function mark(w,v){var i=w.indexOf(v);return i<0?w:w.slice(0,i)+'<i>'+v+'</i>'+w.slice(i+1)}
+// 首頁
+var unitsEl=document.getElementById('units');
+function drawHome(){unitsEl.innerHTML='';UNITS.forEach(function(u,i){var d=el('div','unit u'+(i+1),'<div class="emo">'+u.e+'</div><b>'+u.n+'</b><div class="fam">短 '+u.v+'：'+u.fam+'</div><span class="prog">⭐ '+(store.u[i]||0)+'</span>');d.onclick=function(){openUnit(i)};unitsEl.appendChild(d)})}
+var cur=0,mode='cards';
+function show(home){document.getElementById('v-home').classList.toggle('hide',!home);document.getElementById('v-unit').classList.toggle('hide',home);var b=document.getElementById('back');
+ if(home){b.textContent='🪐 星球';b.href='../../';b.onclick=null;document.getElementById('ttl').textContent='🐱 短母音星球';drawHome()}
+ else{b.textContent='⬅ 單元';b.href='#';b.onclick=function(e){e.preventDefault();location.hash=''}}
+ window.scrollTo(0,0)}
+function openUnit(i){location.hash='u'+(i+1)}
+function route(){var m=/^#u(\d)(?:-(\w+))?$/.exec(location.hash);if(!m||!UNITS[m[1]-1]){speechSynthesis.cancel();show(true);return}
+ cur=m[1]-1;var u=UNITS[cur];document.getElementById('ttl').textContent=u.e+' '+u.n;document.getElementById('uname').textContent=u.n+'・短母音 '+u.v;document.getElementById('ufam').textContent=u.fam;show(false);setMode(m[2]||'cards')}
+addEventListener('hashchange',route);
+document.querySelectorAll('#tabs .btn').forEach(function(b){b.onclick=function(){location.hash='u'+(cur+1)+'-'+b.dataset.m}});
+function setMode(m){mode=['cards','listen','spell','sent'].indexOf(m)<0?'cards':m;document.querySelectorAll('#tabs .btn').forEach(function(b){b.classList.toggle('on',b.dataset.m===mode)});
+ document.getElementById('m-cards').classList.toggle('hide',mode!=='cards');document.getElementById('m-game').classList.toggle('hide',mode==='cards');speechSynthesis.cancel();
+ if(mode==='cards')drawCards();else{score=0;asked=0;nextQ()}}
+// 單字卡
+function drawCards(){var u=UNITS[cur],box=document.getElementById('m-cards');box.innerHTML='';box.appendChild(el('div','sec','單字 Words'));var g=el('div','grid');
+ u.w.forEach(function(w){var d=el('div','tile','<div class="e">'+w[1]+'</div><div class="w">'+mark(w[0],u.v)+'</div><div class="zh">'+w[2]+'</div>');d.onclick=function(){flash(d);say(w[0]+'. '+w[0]+'.')};g.appendChild(d)});box.appendChild(g);
+ box.appendChild(el('div','sec','常見字 High-Frequency Words'));var g2=el('div','grid');
+ u.hf.forEach(function(h){var d=el('div','tile hf','<div class="e">'+h[2]+'</div><div class="w">'+h[0]+'</div><div class="s">'+h[1]+'</div>');d.onclick=function(){flash(d);say(h[0]+'. '+h[1])};g2.appendChild(d)});box.appendChild(g2)}
+// 遊戲
+var score=0,asked=0,ans=null,busy=false,last=null;
+var Q=document.getElementById('qpanel'),O=document.getElementById('qopts'),S=document.getElementById('qscore');
+function right(d,txt){busy=true;flash(d);cheer();addStar(cur);score++;say(txt);setTimeout(nextQ,1700)}
+function nextQ(){busy=false;asked++;S.textContent='答對 '+score+' 題';var u=UNITS[cur];O.innerHTML='';O.className='';
+ if(mode==='listen'){var pool=shuffle(u.w).filter(function(w){return w!==last}).slice(0,4);ans=pool[Math.random()*pool.length|0];last=ans;
+  Q.innerHTML='<p>聽英文，點出正確的圖！</p><button class="btn say">🔊 再聽一次</button>';Q.querySelector('.say').onclick=function(){say(ans[0])};
+  O.className='opts';shuffle(pool).forEach(function(w){var d=el('div','tile','<div class="e">'+w[1]+'</div>');d.onclick=function(){if(busy)return;if(w===ans)right(d,'Yes! '+w[0]+'.');else{shake(d);say(w[0])}};O.appendChild(d)});
+  setTimeout(function(){say(ans[0])},300)}
+ else if(mode==='spell'){var cand=u.w.filter(function(w){return w!==last&&w[0].length<=4});ans=cand[Math.random()*cand.length|0];last=ans;var w=ans[0];
+  // 開頭是母音就挖母音，否則一半挖開頭子音、一半挖短母音
+  var vi=w.indexOf(u.v),pos=VOW.indexOf(w[0])>=0?0:(Math.random()<.5?0:(vi>0?vi:0));var c=w[pos];
+  var src=VOW.indexOf(c)>=0?VOW:CONS;var opts=[c];while(opts.length<3){var x=src[Math.random()*src.length|0];if(opts.indexOf(x)<0)opts.push(x)}
+  Q.innerHTML='<p>'+(VOW.indexOf(c)>=0?'少了哪個母音？':'少了哪個字母？')+'</p><div class="e">'+ans[1]+'</div><div class="word">'+w.slice(0,pos)+'<span class="blank">?</span>'+w.slice(pos+1)+'</div><button class="btn say">🔊 聽單字</button>';
+  Q.querySelector('.say').onclick=function(){say(w)};O.className='letters';
+  shuffle(opts).forEach(function(x){var d=el('div','tile','<div class="w">'+x+'</div>');d.onclick=function(){if(busy)return;if(x===c){Q.querySelector('.blank').textContent=c;right(d,w+'. '+w+'.')}else shake(d)};O.appendChild(d)});
+  setTimeout(function(){say(w)},300)}
+ else{var hs=u.hf.filter(function(h){return h!==last});ans=hs[Math.random()*hs.length|0];last=ans;var h=ans,re=new RegExp('\\b'+h[0].replace("'","\\'")+'s?\\b','i');
+  var others=[];UNITS.forEach(function(x){x.hf.forEach(function(y){if(y[0]!==h[0]&&!new RegExp('\\b'+y[0].replace("'","\\'")+'\\b','i').test(h[1])&&others.indexOf(y[0])<0)others.push(y[0])})});
+  var opts=[h[0]].concat(shuffle(u.hf.map(function(y){return y[0]}).filter(function(y){return y!==h[0]&&!new RegExp('\\b'+y+'\\b','i').test(h[1])})).concat(shuffle(others)).slice(0,2));
+  var m=re.exec(h[1]);var shown=h[1].slice(0,m.index)+'<span class="blank">?</span>'+h[1].slice(m.index+m[0].length);
+  Q.innerHTML='<p>聽句子，選出空格的字！</p><div class="e">'+h[2]+'</div><div class="sent">'+shown+'</div><button class="btn say">🔊 聽句子</button>';
+  Q.querySelector('.say').onclick=function(){say(h[1])};O.className='letters';
+  shuffle(opts).forEach(function(x){var d=el('div','tile','<div class="w" style="font-size:30px">'+x+'</div>');d.onclick=function(){if(busy)return;if(x===h[0]){Q.querySelector('.blank').textContent=m[0];right(d,h[1])}else shake(d)};O.appendChild(d)});
+  setTimeout(function(){say(h[1])},300)}
+}
+route();
+</script>
+</body>
+</html>

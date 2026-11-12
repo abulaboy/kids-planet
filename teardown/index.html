@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#8fdfff">
+<meta name="description" content="七星瓢蟲 3D 拆解：認識頭、胸、腹、六隻腳和翅膀。給幼稚園大班和國小一年級。">
+<title>昆蟲拆解・七星瓢蟲</title>
+<!-- Three.js (MIT) 由 jsDelivr 載入。字形：Noto Sans TC 子集，SIL OFL，見 fonts/OFL.txt。 -->
+<link rel="preload" href="fonts/kids-900.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{
+  font-family:Kids;
+  src:url("fonts/kids-900.woff2") format("woff2");
+  font-weight:100 900;
+  font-display:swap;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+html,body{margin:0;height:100%;overflow:hidden}
+body{
+  min-height:100%;
+  height:100dvh;
+  display:grid;
+  grid-template-rows:auto minmax(180px,1fr) auto auto;
+  font-family:Kids,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Noto Sans CJK TC","Heiti TC","WenQuanYi Micro Hei","Droid Sans Fallback",sans-serif;
+  font-weight:700;
+  color:#2c241c;
+  background:linear-gradient(180deg,#8fdfff 0%,#d8f6ff 46%,#e7ffd2 100%);
+  overscroll-behavior:none;
+  user-select:none;-webkit-user-select:none;
+  touch-action:manipulation;
+}
+[hidden]{display:none !important}
+header{
+  display:flex;align-items:center;gap:8px;
+  width:min(980px,100%);margin:0 auto;
+  padding:calc(8px + env(safe-area-inset-top)) 12px 2px;
+}
+.back{
+  flex:none;background:#fff;color:#333;text-decoration:none;font-weight:900;
+  border-radius:999px;padding:10px 14px;min-height:44px;
+  box-shadow:0 4px 0 rgba(0,0,0,.08);font-size:18px;
+}
+.titles{flex:1;text-align:center}
+h1{
+  margin:0;font-size:clamp(26px,7vw,38px);font-weight:900;line-height:1.45;
+  color:#ff5d86;text-shadow:0 3px 0 #fff;padding-top:.2em;
+}
+h1 rt{font-size:.34em;font-weight:700;color:#e23d6b}
+header p{margin:0;font-size:16px;color:#2f7d46;font-weight:800}
+#stage{position:relative;min-height:0;overflow:hidden}
+#c{width:100%;height:100%;display:block;touch-action:none;cursor:grab;-webkit-touch-callout:none}
+#c:active{cursor:grabbing}
+#loading{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-size:28px;font-weight:900;color:#fff;text-align:center;padding:16px;
+  text-shadow:0 2px 0 #3aa0c8;pointer-events:none;
+}
+.cheer{
+  position:absolute;top:42%;font-size:44px;pointer-events:none;z-index:3;
+  animation:floatup .9s ease forwards;
+}
+@keyframes floatup{
+  0%{transform:translateY(8px) scale(.5);opacity:0}
+  25%{opacity:1}
+  100%{transform:translateY(-76px) scale(1.15);opacity:0}
+}
+#card{
+  width:min(720px,calc(100% - 16px));margin:6px auto 0;
+  background:#fff;border-radius:26px;padding:8px 16px 12px;
+  box-shadow:0 8px 0 rgba(0,0,0,.06);
+  max-height:32dvh;overflow:auto;-webkit-overflow-scrolling:touch;
+}
+#quizLabel{text-align:center;font-size:16px;color:#e23d6b}
+#quizAsk{
+  text-align:center;font-size:clamp(24px,6.2vw,34px);font-weight:900;
+  color:#1a6fd0;line-height:1.35;margin-top:2px;
+}
+#quizHint{text-align:center;font-size:18px;color:#5c6b58;margin:2px 0 4px;min-height:1.2em}
+#quizHint.bad{color:#e0672a;font-weight:900}
+.name{
+  text-align:center;font-size:clamp(34px,8.5vw,48px);font-weight:900;
+  line-height:1.55;padding-top:.28em;color:#2c241c;
+}
+.name rt{font-size:.38em;font-weight:700;color:#e23d6b}
+#blurb{
+  text-align:center;font-size:clamp(18px,4.8vw,23px);line-height:1.45;
+  margin:2px 0 0;font-weight:700;
+}
+#actions{
+  width:min(720px,100%);margin:0 auto;
+  display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px;
+  padding:10px 12px calc(12px + env(safe-area-inset-bottom));
+}
+button{
+  appearance:none;border:0;border-radius:22px;min-height:76px;
+  padding:.55em 8px .35em;font:inherit;font-weight:900;
+  font-size:clamp(18px,4.6vw,24px);color:#fff;cursor:pointer;
+  box-shadow:0 6px 0 rgba(0,0,0,.16);line-height:1.25;
+}
+button rt{font-size:.4em;font-weight:700;color:#fff6c2}
+button:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.16)}
+button:focus-visible,.back:focus-visible{outline:3px solid #ffe56a;outline-offset:2px}
+#explodeBtn{background:#ff6d92;font-size:clamp(26px,6.4vw,34px)}
+#explodeBtn[aria-pressed="true"]{background:#ff9a3c}
+#quizBtn{background:#4aa3ff}
+#quizBtn[aria-pressed="true"]{background:#ff7676}
+#speakBtn{background:#2ec9a0}
+#card.shake{animation:shake .4s ease}
+@keyframes shake{
+  20%{transform:translateX(-7px)}
+  40%{transform:translateX(7px)}
+  60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}
+@media (max-width:640px){
+  #actions{grid-template-columns:1fr 1fr}
+  #explodeBtn{grid-column:1 / -1}
+}
+@media (prefers-reduced-motion:reduce){
+  .cheer,#card.shake{animation:none}
+}
+</style>
+</head>
+<body data-ready="0" data-explode="closed" data-quiz="off" data-part="intro">
+<header>
+  <a class="back" href="../">🪐 星球</a>
+  <div class="titles">
+    <h1><ruby>昆<rt>ㄎㄨㄣ</rt></ruby><ruby>蟲<rt>ㄔㄨㄥˊ</rt></ruby><ruby>拆<rt>ㄔㄞ</rt></ruby><ruby>解<rt>ㄐㄧㄝˇ</rt></ruby></h1>
+    <p>七星瓢蟲</p>
+  </div>
+</header>
+<div id="stage">
+  <canvas id="c" aria-label="七星瓢蟲模型。拖曳可以轉動，兩指可以縮放，點一個部位會說明。"></canvas>
+  <div id="loading">瓢蟲飛來囉…</div>
+</div>
+<section id="card">
+  <div id="quizBlock" hidden>
+    <div id="quizLabel"></div>
+    <div id="quizAsk"></div>
+    <div id="quizHint"></div>
+  </div>
+  <div id="name" class="name"></div>
+  <p id="blurb"></p>
+</section>
+<nav id="actions">
+  <button id="explodeBtn" type="button" aria-pressed="false" aria-label="拆開"><ruby>拆<rt>ㄔㄞ</rt></ruby><ruby>開<rt>ㄎㄞ</rt></ruby></button>
+  <button id="quizBtn" type="button" aria-pressed="false" aria-label="小問答"><ruby>小<rt>ㄒㄧㄠˇ</rt></ruby><ruby>問<rt>ㄨㄣˋ</rt></ruby><ruby>答<rt>ㄉㄚˊ</rt></ruby></button>
+  <button id="speakBtn" type="button" aria-label="唸一唸"><ruby>唸<rt>ㄋㄧㄢˋ</rt></ruby><ruby>一<rt>ㄧˊ</rt></ruby><ruby>唸<rt>ㄋㄧㄢˋ</rt></ruby></button>
+</nav>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const $ = (id) => document.getElementById(id);
+const canvas = $('c');
+const stage = $('stage');
+const card = $('card');
+const nameEl = $('name');
+const blurb = $('blurb');
+const loading = $('loading');
+const explodeBtn = $('explodeBtn');
+const quizBtn = $('quizBtn');
+const speakBtn = $('speakBtn');
+const quizBlock = $('quizBlock');
+const quizLabel = $('quizLabel');
+const quizAsk = $('quizAsk');
+const quizHint = $('quizHint');
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CN = ['零','一','二','三','四','五'];
+
+function rubyHTML(pairs) {
+  return pairs.map(([c, z]) => `<ruby>${c}<rt>${z}</rt></ruby>`).join('');
+}
+function setRubyButton(btn, pairs, label) {
+  btn.innerHTML = rubyHTML(pairs);
+  btn.setAttribute('aria-label', label);
+}
+
+const BTN = {
+  open: [[['拆','ㄔㄞ'],['開','ㄎㄞ']], '拆開'],
+  close: [[['合','ㄏㄜˊ'],['起','ㄑㄧˇ'],['來','ㄌㄞˊ']], '合起來'],
+  quiz: [[['小','ㄒㄧㄠˇ'],['問','ㄨㄣˋ'],['答','ㄉㄚˊ']], '小問答'],
+  stop: [[['結','ㄐㄧㄝˊ'],['束','ㄕㄨˋ']], '結束'],
+  again: [[['再','ㄗㄞˋ'],['玩','ㄨㄢˊ'],['一','ㄧˊ'],['次','ㄘˋ']], '再玩一次'],
+};
+
+const INFO = {
+  intro: {
+    ruby: [['七','ㄑㄧ'],['星','ㄒㄧㄥ'],['瓢','ㄆㄧㄠˊ'],['蟲','ㄔㄨㄥˊ']],
+    blurb: '點一點牠的身體，看看每個部位。按「拆開」，部位會飛開來。',
+    speech: '七星瓢蟲。點一點牠的身體，看看每個部位。也可以按拆開。',
+  },
+  head: {
+    ruby: [['頭','ㄊㄡˊ']],
+    blurb: '頭在身體最前面。頭上有觸角、複眼和口器。',
+    speech: '頭。頭在身體最前面。頭上有觸角、複眼和口器。',
+  },
+  antenna: {
+    ruby: [['觸','ㄔㄨˋ'],['角','ㄐㄧㄠˇ']],
+    blurb: '觸角長在頭上，可以聞味道、找朋友。瓢蟲的觸角短短的，末端圓圓的。',
+    speech: '觸角。觸角長在頭上，可以聞味道、找朋友。',
+  },
+  eye: {
+    ruby: [['複','ㄈㄨˋ'],['眼','ㄧㄢˇ']],
+    blurb: '複眼長在頭的兩邊。裡面有好多小眼睛，一次看得到很寬的地方。',
+    speech: '複眼。複眼長在頭的兩邊，裡面有好多小眼睛。',
+  },
+  mouth: {
+    ruby: [['口','ㄎㄡˇ'],['器','ㄑㄧˋ']],
+    blurb: '口器就是嘴巴。瓢蟲用它咬小蟲，這樣可以幫助植物長大。',
+    speech: '口器。口器就是嘴巴。瓢蟲用它咬小蟲，幫助植物長大。',
+  },
+  thorax: {
+    ruby: [['胸','ㄒㄩㄥ'],['部','ㄅㄨˋ']],
+    blurb: '胸部在頭和腹部中間。六隻腳和兩對翅膀，都長在胸部。',
+    speech: '胸部。胸部在中間。六隻腳和翅膀都長在胸部。',
+  },
+  abdomen: {
+    ruby: [['腹','ㄈㄨˋ'],['部','ㄅㄨˋ']],
+    blurb: '腹部在身體後面，一節一節的。吃進去的食物在這裡消化。',
+    speech: '腹部。腹部在身體後面，一節一節的，用來消化食物。',
+  },
+  elyL: {
+    ruby: [['左','ㄗㄨㄛˇ'],['前','ㄑㄧㄢˊ'],['翅','ㄔˋ']],
+    blurb: '這片紅色硬殼是前翅，也叫鞘翅 ㄑㄧㄠˋ ㄔˋ。它硬硬的，用來保護軟軟的後翅和腹部。七星瓢蟲有七個黑點。',
+    speech: '左前翅。這片紅色硬殼是前翅，也叫鞘翅。用來保護身體。七星瓢蟲有七個黑點。',
+  },
+  elyR: {
+    ruby: [['右','ㄧㄡˋ'],['前','ㄑㄧㄢˊ'],['翅','ㄔˋ']],
+    blurb: '這片紅色硬殼是前翅，也叫鞘翅 ㄑㄧㄠˋ ㄔˋ。它硬硬的，用來保護軟軟的後翅和腹部。七星瓢蟲有七個黑點。',
+    speech: '右前翅。這片紅色硬殼是前翅，也叫鞘翅。用來保護身體。七星瓢蟲有七個黑點。',
+  },
+  hindL: {
+    ruby: [['左','ㄗㄨㄛˇ'],['後','ㄏㄡˋ'],['翅','ㄔˋ']],
+    blurb: '後翅薄薄透透的，平常收在紅色硬殼下面。要飛的時候才打開放開來。',
+    speech: '左後翅。後翅薄薄透透的，平常收在紅色殼下面，飛的時候才打開。',
+  },
+  hindR: {
+    ruby: [['右','ㄧㄡˋ'],['後','ㄏㄡˋ'],['翅','ㄔˋ']],
+    blurb: '後翅薄薄透透的，平常收在紅色硬殼下面。要飛的時候才打開放開來。',
+    speech: '右後翅。後翅薄薄透透的，平常收在紅色殼下面，飛的時候才打開。',
+  },
+};
+
+function legInfo(pairs, said) {
+  return {
+    ruby: pairs,
+    blurb: '這是一隻腳。昆蟲都有六隻腳，三對全都長在胸部，不長在腹部。',
+    speech: said + '。這是一隻腳。昆蟲都有六隻腳，全都長在胸部。',
+  };
+}
+INFO.legFL = legInfo([['左','ㄗㄨㄛˇ'],['前','ㄑㄧㄢˊ'],['腳','ㄐㄧㄠˇ']], '左前腳');
+INFO.legFR = legInfo([['右','ㄧㄡˋ'],['前','ㄑㄧㄢˊ'],['腳','ㄐㄧㄠˇ']], '右前腳');
+INFO.legML = legInfo([['左','ㄗㄨㄛˇ'],['中','ㄓㄨㄥ'],['腳','ㄐㄧㄠˇ']], '左中腳');
+INFO.legMR = legInfo([['右','ㄧㄡˋ'],['中','ㄓㄨㄥ'],['腳','ㄐㄧㄠˇ']], '右中腳');
+INFO.legHL = legInfo([['左','ㄗㄨㄛˇ'],['後','ㄏㄡˋ'],['腳','ㄐㄧㄠˇ']], '左後腳');
+INFO.legHR = legInfo([['右','ㄧㄡˋ'],['後','ㄏㄡˋ'],['腳','ㄐㄧㄠˇ']], '右後腳');
+
+const QUESTIONS = [
+  { part: 'antenna', ask: '點點看，哪個是觸角？', ok: '答對了！觸角長在頭上。', hint: '觸角是頭上兩根短短的鬚鬚。', tip: '頭上短短的兩根。' },
+  { part: 'eye', ask: '點點看，哪個是複眼？', ok: '答對了！複眼長在頭的兩邊。', hint: '複眼是頭兩邊，有很多小格子的眼睛。', tip: '找找頭的兩邊。' },
+  { part: 'thorax', ask: '六隻腳長在哪裡？點一點。', ok: '答對了！昆蟲的腳都長在胸部。', hint: '胸部在頭和腹部中間。', tip: '不是腳本身，是長腳的地方。' },
+  { part: 'elytron', ask: '紅色硬硬的殼是什麼？點一點。', ok: '答對了！那是前翅，用來保護身體。', hint: '紅色的硬殼其實是翅膀喔。', tip: '看看紅色的背殼。' },
+  { part: 'abdomen', ask: '點點看，哪個是腹部？', ok: '答對了！腹部在身體後面。', hint: '腹部在後面，一節一節的。看不清楚就按拆開。', tip: '看不清楚，可以先按拆開。' },
+];
+
+let currentSpeech = INFO.intro.speech;
+let quiz = null;
+let selected = null;
+
+function showInfo(info) {
+  nameEl.hidden = false;
+  blurb.hidden = false;
+  nameEl.innerHTML = rubyHTML(info.ruby);
+  blurb.textContent = info.blurb;
+  currentSpeech = info.speech;
+}
+function showIntro() {
+  selected = null;
+  showInfo(INFO.intro);
+  document.body.dataset.part = 'intro';
+}
+
+let voice = null;
+function refreshVoice() {
+  if (!window.speechSynthesis) return;
+  const list = speechSynthesis.getVoices();
+  voice = list.find((v) => /zh[-_]TW/i.test(v.lang))
+    || list.find((v) => /Mei-Jia|Ting-Ting|Tingting/i.test(v.name))
+    || list.find((v) => /^zh/i.test(v.lang))
+    || null;
+}
+if (window.speechSynthesis) {
+  refreshVoice();
+  speechSynthesis.onvoiceschanged = refreshVoice;
+}
+function utterance(text) {
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-TW';
+  u.rate = 0.9;
+  u.pitch = 1.04;
+  if (voice) u.voice = voice;
+  return u;
+}
+function speakParts(parts) {
+  if (!window.speechSynthesis) return;
+  const lines = parts.filter(Boolean);
+  if (!lines.length) return;
+  const synth = speechSynthesis;
+  synth.resume();
+  synth.cancel();
+  lines.forEach((line) => synth.speak(utterance(line)));
+}
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: true,
+    powerPreference: 'high-performance',
+  });
+} catch (err) {
+  loading.textContent = '這個裝置沒辦法顯示 3D。請換一台手機或電腦試試看。';
+  throw err;
+}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NoToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(34, 1, 0.08, 80);
+const controls = new OrbitControls(camera, canvas);
+controls.target.set(0, 0.52, 0.05);
+controls.enablePan = false;
+controls.enableDamping = false;
+controls.dampingFactor = 0.08;
+controls.minDistance = 3.3;
+controls.maxDistance = 18;
+controls.minPolarAngle = 0.2;
+controls.maxPolarAngle = Math.PI * 0.58;
+controls.rotateSpeed = 0.85;
+controls.zoomSpeed = 0.85;
+
+const hemi = new THREE.HemisphereLight(0xfff8ee, 0x8ed48a, 0.95);
+scene.add(hemi);
+const key = new THREE.DirectionalLight(0xfff7ee, 1.25);
+key.position.set(4.5, 9.5, 5.5);
+key.castShadow = true;
+key.shadow.mapSize.set(1024, 1024);
+key.shadow.camera.left = -7;
+key.shadow.camera.right = 7;
+key.shadow.camera.top = 7;
+key.shadow.camera.bottom = -7;
+key.shadow.camera.near = 0.5;
+key.shadow.camera.far = 28;
+key.shadow.bias = -0.0004;
+key.shadow.normalBias = 0.03;
+scene.add(key);
+const fill = new THREE.DirectionalLight(0xd7ecff, 0.55);
+fill.position.set(-6, 4, -3);
+scene.add(fill);
+const rim = new THREE.DirectionalLight(0xffe0ea, 0.35);
+rim.position.set(-2, 5, -6);
+scene.add(rim);
+
+function plastic(color, opts = {}) {
+  const m = new THREE.MeshStandardMaterial({
+    color,
+    roughness: opts.roughness ?? 0.46,
+    metalness: opts.metalness ?? 0.04,
+    emissive: opts.emissive ?? 0x000000,
+    emissiveIntensity: opts.emissiveIntensity ?? 0,
+    map: opts.map ?? null,
+    transparent: opts.transparent ?? false,
+    opacity: opts.opacity ?? 1,
+    side: opts.side ?? THREE.FrontSide,
+    depthWrite: opts.depthWrite ?? true,
+  });
+  m.userData.baseEmissive = m.emissive.clone();
+  m.userData.baseIntensity = m.emissiveIntensity;
+  if (opts.wing) m.userData.isWing = true;
+  return m;
+}
+
+const geoCache = new Map();
+function sphere(r, w = 18, h = 14) {
+  const key = r + ':' + w + ':' + h;
+  if (!geoCache.has(key)) geoCache.set(key, new THREE.SphereGeometry(r, w, h));
+  return geoCache.get(key);
+}
+
+const hitMat = new THREE.MeshBasicMaterial({
+  transparent: true, opacity: 0, depthWrite: false, colorWrite: false,
+});
+function hitbox(parent, radius, at) {
+  const mesh = new THREE.Mesh(sphere(radius, 10, 8), hitMat);
+  mesh.position.set(at[0], at[1], at[2]);
+  mesh.userData.hitbox = true;
+  parent.add(mesh);
+}
+
+function buildChain(parent, points, radii, material) {
+  const vs = points.map((p) => new THREE.Vector3(p[0], p[1], p[2]));
+  vs.forEach((v, i) => {
+    const ball = new THREE.Mesh(sphere(radii[i], 12, 10), material);
+    ball.position.copy(v);
+    parent.add(ball);
+  });
+  for (let i = 0; i < vs.length - 1; i++) {
+    const dist = vs[i].distanceTo(vs[i + 1]);
+    const r = Math.min(radii[i], radii[i + 1]) * 0.78;
+    const len = Math.max(0.02, dist - r * 2);
+    const limb = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 4, 8), material);
+    limb.position.copy(vs[i]).add(vs[i + 1]).multiplyScalar(0.5);
+    limb.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), vs[i + 1].clone().sub(vs[i]).normalize());
+    parent.add(limb);
+  }
+}
+
+function makeEyeTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const g = c.getContext('2d');
+  g.fillStyle = '#6a2c1c';
+  g.fillRect(0, 0, 256, 256);
+  const step = 22;
+  for (let row = 0; row < 14; row++) {
+    for (let col = 0; col < 14; col++) {
+      const x = 8 + col * step + (row % 2) * step * 0.5;
+      const y = 8 + row * step * 0.86;
+      g.beginPath();
+      g.fillStyle = (row + col) % 2 === 0 ? '#8d4030' : '#4e1c12';
+      g.arc(x, y, 8, 0, Math.PI * 2);
+      g.fill();
+      g.beginPath();
+      g.fillStyle = 'rgba(255, 220, 160, 0.7)';
+      g.arc(x - 2.4, y - 2.4, 2.5, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+  return tex;
+}
+function makeAbdomenTexture() {
+  const c = document.createElement('canvas');
+  c.width = 128;
+  c.height = 256;
+  const g = c.getContext('2d');
+  g.fillStyle = '#ff9a3c';
+  g.fillRect(0, 0, 128, 256);
+  g.fillStyle = '#a85a28';
+  for (let i = 0; i < 6; i++) g.fillRect(0, 28 + i * 34, 128, 4);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const eyeTex = makeEyeTexture();
+const abdTex = makeAbdomenTexture();
+
+function mirrorX(geo) {
+  const g = geo.clone();
+  const pos = g.attributes.position;
+  for (let i = 0; i < pos.count; i++) pos.setX(i, -pos.getX(i));
+  const idx = g.index;
+  if (idx) {
+    const a = idx.array;
+    for (let i = 0; i < a.length; i += 3) {
+      const t = a[i + 1];
+      a[i + 1] = a[i + 2];
+      a[i + 2] = t;
+    }
+    idx.needsUpdate = true;
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+const bug = new THREE.Group();
+scene.add(bug);
+const partGroups = [];
+const pickables = [];
+
+function adopt(group, spec) {
+  group.userData.partId = spec.id;
+  group.userData.infoKey = spec.info;
+  group.userData.pair = !!spec.pair;
+  group.userData.home = group.position.clone();
+  group.userData.offset = new THREE.Vector3(...(spec.offset || [0, 0, 0]));
+  group.userData.homeRot = { x: group.rotation.x, y: group.rotation.y, z: group.rotation.z };
+  group.userData.openRot = spec.openRot || { x: 0, y: 0, z: 0 };
+  group.userData.sway = !!spec.sway;
+  group.userData.wing = !!spec.wing;
+  group.userData.phase = partGroups.length * 0.7;
+  group.name = spec.info;
+  group.traverse((o) => {
+    if (!o.isMesh) return;
+    o.castShadow = !o.userData.hitbox && !spec.wing;
+    o.receiveShadow = !o.userData.hitbox && !spec.wing;
+    o.userData.partId = spec.id;
+    o.userData.partRoot = group;
+    pickables.push(o);
+    const mats = [].concat(o.material || []);
+    mats.forEach((m) => {
+      if (m && m.emissive && !m.userData.baseEmissive) {
+        m.userData.baseEmissive = m.emissive.clone();
+        m.userData.baseIntensity = m.emissiveIntensity || 0;
+      }
+    });
+  });
+  partGroups.push(group);
+  bug.add(group);
+}
+
+function isLit(g) {
+  if (!selected) return false;
+  if (g === selected) return true;
+  return !!(g.userData.pair && selected.userData.pair && g.userData.partId === selected.userData.partId);
+}
+
+const SHELL = { sx: 0.98, sy: 0.6, sz: 1.2, y: 0.6, z: -0.34 };
+
+function onEllipsoid(x, y, z) {
+  const ix = x / SHELL.sx;
+  const iy = y / SHELL.sy;
+  const iz = z / SHELL.sz;
+  const len = Math.hypot(ix, iy, iz) || 1;
+  return new THREE.Vector3((ix / len) * SHELL.sx, (iy / len) * SHELL.sy, (iz / len) * SHELL.sz);
+}
+
+const shellSrc = new THREE.SphereGeometry(1, 36, 20, Math.PI / 2, Math.PI, 0, Math.PI / 2);
+shellSrc.scale(SHELL.sx, SHELL.sy, SHELL.sz);
+const shellGeos = { 1: shellSrc, '-1': mirrorX(shellSrc) };
+/* 七個黑點：背中線前端一顆，加上每邊前、中、後各一顆。 */
+const SPOTS = [
+  [0.1, 0.42, 0.78, 0.12],
+  [0.52, 0.4, 0.46, 0.125],
+  [0.68, 0.36, -0.2, 0.155],
+  [0.4, 0.32, -0.78, 0.12],
+];
+
+function makeShell(side) {
+  const group = new THREE.Group();
+  group.position.set(0, SHELL.y, SHELL.z);
+  const mat = plastic(0xff3b48, { roughness: 0.32, metalness: 0.08 });
+  const mesh = new THREE.Mesh(shellGeos[side], mat);
+  mesh.position.x = side * 0.02;
+  group.add(mesh);
+  const spotMat = plastic(0x1a1a1a, { roughness: 0.5 });
+  spotMat.polygonOffset = true;
+  spotMat.polygonOffsetFactor = -2;
+  spotMat.polygonOffsetUnits = -2;
+  SPOTS.forEach((s) => {
+    const pos = onEllipsoid(s[0] * side, s[1], s[2]);
+    const spot = new THREE.Mesh(sphere(1, 16, 12), spotMat);
+    spot.position.copy(pos);
+    spot.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), pos.clone().normalize());
+    spot.scale.set(s[3], s[3], s[3] * 0.48);
+    mesh.add(spot);
+  });
+  adopt(group, {
+    id: 'elytron',
+    info: side < 0 ? 'elyL' : 'elyR',
+    pair: true,
+    offset: [side * 1.32, 0.58, -0.04],
+    openRot: { x: 0, y: 0, z: side * -0.08 },
+  });
+}
+
+function makeHindwing(side) {
+  const s = side;
+  const shape = new THREE.Shape();
+  shape.moveTo(s * 0.06, 0.02);
+  shape.bezierCurveTo(s * 0.5, 0.2, s * 1.1, 0.4, s * 1.22, 0.9);
+  shape.bezierCurveTo(s * 1.02, 1.32, s * 0.42, 1.45, s * 0.14, 1.18);
+  shape.bezierCurveTo(s * 0.02, 0.8, 0, 0.3, s * 0.06, 0.02);
+  const geo = new THREE.ShapeGeometry(shape, 20);
+  geo.rotateX(-Math.PI / 2);
+  geo.computeVertexNormals();
+  const group = new THREE.Group();
+  group.position.set(s * 0.1, 0.5, -0.02);
+  group.rotation.x = 0.3;
+  group.rotation.z = s * 1.0;
+  const mat = plastic(0xffc56b, {
+    roughness: 0.3, transparent: true, opacity: 0, side: THREE.DoubleSide,
+    depthWrite: false, wing: true, emissive: 0xffb35a, emissiveIntensity: 0.12,
+  });
+  const membrane = new THREE.Mesh(geo, mat);
+  membrane.renderOrder = 3;
+  group.add(membrane);
+  const veinMat = plastic(0xc47a32, {
+    roughness: 0.4, transparent: true, opacity: 0, side: THREE.DoubleSide,
+    depthWrite: false, wing: true,
+  });
+  const veins = [
+    [[s * 0.1, 0.02, -0.08], [s * 0.7, 0.02, -0.55], [s * 1.05, 0.02, -1.05]],
+    [[s * 0.1, 0.02, -0.08], [s * 0.35, 0.02, -0.7], [s * 0.22, 0.02, -1.2]],
+    [[s * 0.12, 0.02, -0.1], [s * 0.85, 0.02, -0.4], [s * 1.15, 0.02, -0.75]],
+  ];
+  veins.forEach((pts) => {
+    const curve = new THREE.CatmullRomCurve3(pts.map((p) => new THREE.Vector3(p[0], p[1], p[2])));
+    const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 14, 0.012, 5, false), veinMat);
+    tube.renderOrder = 4;
+    group.add(tube);
+  });
+  hitbox(group, 0.45, [s * 0.55, 0, -0.55]);
+  adopt(group, {
+    id: 'hindwing',
+    info: side < 0 ? 'hindL' : 'hindR',
+    pair: true,
+    wing: true,
+    offset: [s * 1.95, 0.22, -0.42],
+    openRot: { x: -0.3, y: 0, z: s * -1.0 },
+  });
+}
+
+(function buildBug() {
+  const thorax = new THREE.Group();
+  const pronGeo = new THREE.SphereGeometry(0.52, 32, 18, 0, Math.PI * 2, 0, Math.PI * 0.58);
+  pronGeo.scale(1.38, 0.62, 1.02);
+  const pron = new THREE.Mesh(pronGeo, plastic(0x1a1a1a, { roughness: 0.4, metalness: 0.08 }));
+  pron.position.set(0, 0.66, 0.8);
+  thorax.add(pron);
+  [-1, 1].forEach((side) => {
+    const patch = new THREE.Mesh(sphere(0.13, 14, 12), plastic(0xfff7ec, { roughness: 0.55 }));
+    patch.position.set(side * 0.44, 0.76, 1.05);
+    patch.scale.set(1.15, 0.42, 0.8);
+    thorax.add(patch);
+  });
+  const bellyGeo = new THREE.SphereGeometry(0.4, 24, 16);
+  bellyGeo.scale(0.9, 0.62, 1.55);
+  const belly = new THREE.Mesh(bellyGeo, plastic(0x2a2a2a, { roughness: 0.5, metalness: 0.06 }));
+  belly.position.set(0, 0.32, 0.38);
+  thorax.add(belly);
+  adopt(thorax, { id: 'thorax', info: 'thorax', offset: [0, 0.32, 0.12] });
+
+  const head = new THREE.Group();
+  head.position.set(0, 0.52, 1.16);
+  const headMesh = new THREE.Mesh(sphere(0.33, 28, 20), plastic(0x2b2b2b, { roughness: 0.38, metalness: 0.1 }));
+  headMesh.scale.set(1.06, 0.9, 0.96);
+  head.add(headMesh);
+  adopt(head, {
+    id: 'head', info: 'head', offset: [0, 0.32, 0.98], openRot: { x: -0.3, y: 0, z: 0 },
+  });
+
+  [-1, 1].forEach((side) => {
+    const eye = new THREE.Group();
+    eye.position.set(side * 0.32, 0.6, 1.32);
+    const ball = new THREE.Mesh(sphere(0.155, 22, 16), plastic(0xffffff, {
+      map: eyeTex, roughness: 0.32, metalness: 0.05, emissive: 0x5a2418, emissiveIntensity: 0.18,
+    }));
+    eye.add(ball);
+    hitbox(eye, 0.2, [0, 0, 0]);
+    adopt(eye, { id: 'eye', info: 'eye', pair: true, offset: [side * 0.55, 0.4, 1.02] });
+
+    const ant = new THREE.Group();
+    ant.position.set(side * 0.08, 0.78, 1.24);
+    const antMat = plastic(0x4a3424, { roughness: 0.4, metalness: 0.08 });
+    buildChain(ant, [
+      [0, 0, 0],
+      [side * 0.06, 0.12, 0.05],
+      [side * 0.12, 0.26, 0.08],
+      [side * 0.15, 0.4, 0.1],
+    ], [0.045, 0.04, 0.036, 0.072], antMat);
+    hitbox(ant, 0.22, [side * 0.12, 0.28, 0.07]);
+    adopt(ant, {
+      id: 'antenna', info: 'antenna', pair: true, sway: true,
+      offset: [side * 0.5, 0.36, 1.08],
+      openRot: { x: -0.2, y: 0, z: side * 0.2 },
+    });
+  });
+
+  const mouth = new THREE.Group();
+  mouth.position.set(0, 0.3, 1.48);
+  const cone = new THREE.ConeGeometry(0.04, 0.14, 6);
+  const jawMat = plastic(0x8a4b28, { roughness: 0.48 });
+  [-1, 1].forEach((side) => {
+    const jaw = new THREE.Mesh(cone, jawMat);
+    jaw.position.set(side * 0.055, 0, 0);
+    jaw.rotation.set(Math.PI / 2.4, 0, side * -0.45);
+    mouth.add(jaw);
+  });
+  const lip = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.04, 0.06), plastic(0x6d3a20, { roughness: 0.55 }));
+  lip.position.set(0, 0.045, -0.02);
+  mouth.add(lip);
+  hitbox(mouth, 0.18, [0, 0.02, 0]);
+  adopt(mouth, { id: 'mouth', info: 'mouth', offset: [0, -0.12, 1.1] });
+
+  const abd = new THREE.Group();
+  abd.position.set(0, 0.48, -0.5);
+  const abdGeo = new THREE.SphereGeometry(1, 32, 22);
+  abdGeo.rotateX(Math.PI / 2);
+  abdGeo.scale(0.64, 0.28, 1.26);
+  abd.add(new THREE.Mesh(abdGeo, plastic(0xffffff, { map: abdTex, roughness: 0.62 })));
+  adopt(abd, { id: 'abdomen', info: 'abdomen', offset: [0, -0.12, -1.02] });
+
+  makeShell(1);
+  makeShell(-1);
+  makeHindwing(1);
+  makeHindwing(-1);
+
+  const legs = [
+    { info: 'legFR', side: 1, which: 'front', coxa: [0.36, 0.3, 0.74], knee: [0.62, 0.42, 1.02], ankle: [0.74, 0.12, 1.22], toe: [0.8, 0.03, 1.4], offset: [0.58, 0.14, 0.52] },
+    { info: 'legMR', side: 1, which: 'mid', coxa: [0.4, 0.28, 0.36], knee: [0.78, 0.4, 0.4], ankle: [0.96, 0.1, 0.28], toe: [1.02, 0.03, 0.1], offset: [0.9, 0.1, 0] },
+    { info: 'legHR', side: 1, which: 'hind', coxa: [0.36, 0.28, 0.02], knee: [0.68, 0.44, -0.28], ankle: [0.84, 0.12, -0.55], toe: [0.76, 0.03, -0.78], offset: [0.62, 0.12, -0.5] },
+  ];
+  const socketMat = plastic(0x3a3a3a, { roughness: 0.5 });
+  legs.forEach((leg) => {
+    [-1, 1].forEach((mirror) => {
+      const info = mirror < 0 ? leg.info.replace('R', 'L') : leg.info;
+      const sign = mirror;
+      const pts = [leg.coxa, leg.knee, leg.ankle, leg.toe].map((p) => [p[0] * sign, p[1], p[2]]);
+      const origin = pts[0];
+      const local = pts.map((p) => [p[0] - origin[0], p[1] - origin[1], p[2] - origin[2]]);
+      const g = new THREE.Group();
+      g.position.set(origin[0], origin[1], origin[2]);
+      const mat = plastic(0x2a2a2a, { roughness: 0.4, metalness: 0.12 });
+      const radii = leg.which === 'hind' ? [0.074, 0.056, 0.04, 0.026] : [0.07, 0.05, 0.038, 0.026];
+      buildChain(g, local, radii, mat);
+      hitbox(g, 0.2, local[1]);
+      adopt(g, {
+        id: 'leg',
+        info,
+        offset: [leg.offset[0] * sign, leg.offset[1], leg.offset[2]],
+      });
+      const sock = new THREE.Mesh(sphere(0.046, 10, 8), socketMat);
+      sock.position.set(origin[0] - sign * 0.02, origin[1], origin[2]);
+      thorax.add(sock);
+      sock.userData.partRoot = thorax;
+      sock.userData.partId = 'thorax';
+      pickables.push(sock);
+    });
+  });
+  [-1, 1].forEach((side) => {
+    const pegA = new THREE.Mesh(sphere(0.035, 10, 8), plastic(0xff5d66, { roughness: 0.4 }));
+    pegA.position.set(side * 0.1, 0.52, 0.12);
+    thorax.add(pegA);
+    const pegB = new THREE.Mesh(sphere(0.032, 10, 8), plastic(0xf0b15a, { roughness: 0.4 }));
+    pegB.position.set(side * 0.1, 0.5, -0.02);
+    thorax.add(pegB);
+    [pegA, pegB].forEach((peg) => {
+      peg.userData.partRoot = thorax;
+      peg.userData.partId = 'thorax';
+      pickables.push(peg);
+    });
+  });
+})();
+
+(function decorate() {
+  const grass = new THREE.Mesh(
+    new THREE.CircleGeometry(18, 64),
+    plastic(0x8ad86e, { roughness: 1, metalness: 0 }),
+  );
+  grass.rotation.x = -Math.PI / 2;
+  grass.position.y = 0;
+  grass.receiveShadow = true;
+  scene.add(grass);
+  const patch = new THREE.Mesh(
+    new THREE.CircleGeometry(2.15, 36),
+    plastic(0xc8f09a, { roughness: 1, metalness: 0 }),
+  );
+  patch.rotation.x = -Math.PI / 2;
+  patch.position.y = 0.02;
+  patch.receiveShadow = true;
+  scene.add(patch);
+
+  function flower(x, z, kind, scale) {
+    const g = new THREE.Group();
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.042, 0.46, 6), plastic(0x3cb043, { roughness: 0.7 }));
+    stem.position.y = 0.23;
+    g.add(stem);
+    if (kind === 'daisy') {
+      const center = new THREE.Mesh(sphere(0.09, 12, 10), plastic(0xffce3a, { roughness: 0.5 }));
+      center.position.y = 0.5;
+      g.add(center);
+      const petalMat = plastic(0xffffff, { roughness: 0.62 });
+      for (let i = 0; i < 7; i++) {
+        const petal = new THREE.Mesh(sphere(0.075, 10, 8), petalMat);
+        const a = (i / 7) * Math.PI * 2;
+        petal.position.set(Math.cos(a) * 0.14, 0.5, Math.sin(a) * 0.14);
+        petal.scale.set(0.72, 0.42, 1.2);
+        g.add(petal);
+      }
+    } else {
+      const petalMat = plastic(0xff7eb3, { roughness: 0.45 });
+      for (let i = 0; i < 5; i++) {
+        const petal = new THREE.Mesh(sphere(0.1, 10, 8), petalMat);
+        const a = (i / 5) * Math.PI * 2;
+        petal.position.set(Math.cos(a) * 0.08, 0.52, Math.sin(a) * 0.08);
+        g.add(petal);
+      }
+      const center = new THREE.Mesh(sphere(0.055, 10, 8), plastic(0xffe07a, { roughness: 0.45 }));
+      center.position.y = 0.58;
+      g.add(center);
+    }
+    g.position.set(x, 0, z);
+    g.scale.setScalar(scale);
+    g.rotation.y = x * 0.4 + z;
+    scene.add(g);
+  }
+  [[2.55, 1.55, 'daisy', 1], [-2.7, 1.35, 'daisy', 0.9], [-2.15, -2.45, 'daisy', 1.05], [2.7, -1.7, 'pink', 1], [0.9, 2.55, 'pink', 0.85], [-3.35, -0.35, 'daisy', 0.8]].forEach((f) => flower(f[0], f[1], f[2], f[3]));
+
+  const tuftMat = plastic(0x49b14e, { roughness: 0.8 });
+  [[1.7, 2.15], [-1.55, 2.35], [3.3, 0.35], [-3.5, 1.9], [3.1, -2.6]].forEach(([x, z], i) => {
+    const g = new THREE.Group();
+    for (let b = 0; b < 3; b++) {
+      const blade = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.28 + (i % 2) * 0.06, 4), tuftMat);
+      blade.position.set((b - 1) * 0.045, 0.14, 0);
+      blade.rotation.z = (b - 1) * 0.18;
+      g.add(blade);
+    }
+    g.position.set(x, 0, z);
+    g.rotation.y = i;
+    scene.add(g);
+  });
+
+  const sun = new THREE.Group();
+  sun.name = 'sun';
+  sun.add(new THREE.Mesh(sphere(0.48, 18, 14), new THREE.MeshBasicMaterial({ color: 0xffe15a })));
+  const rayMat = new THREE.MeshBasicMaterial({ color: 0xffd23a });
+  for (let i = 0; i < 8; i++) {
+    const ray = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.34, 6), rayMat);
+    ray.position.y = 0.7;
+    const pivot = new THREE.Group();
+    pivot.rotation.z = (i / 8) * Math.PI * 2;
+    pivot.add(ray);
+    sun.add(pivot);
+  }
+  sun.position.set(4.6, 3.5, -2.6);
+  scene.add(sun);
+
+  function cloud(x, y, z, sc) {
+    const g = new THREE.Group();
+    const m = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    [[0, 0, 0, 1], [0.7, 0.1, 0, 0.72], [-0.62, 0.05, 0.05, 0.6], [0.22, 0.36, 0, 0.52]].forEach(([bx, by, bz, s]) => {
+      const mesh = new THREE.Mesh(sphere(0.4, 12, 10), m);
+      mesh.position.set(bx, by, bz);
+      mesh.scale.setScalar(s);
+      g.add(mesh);
+    });
+    g.position.set(x, y, z);
+    g.scale.setScalar(sc);
+    g.userData.baseX = x;
+    g.userData.phase = x;
+    scene.add(g);
+    return g;
+  }
+  const clouds = [cloud(-4.2, 3.15, -2.2, 1.05), cloud(2.4, 3.7, -3.6, 0.85)];
+  scene.userData.sun = sun;
+  scene.userData.clouds = clouds;
+})();
+
+const homeDir = new THREE.Vector3(0.72, 1.9, 2.05).normalize();
+let userMoved = false;
+function frameCamera(t) {
+  const w = Math.max(1, stage.clientWidth);
+  const h = Math.max(1, stage.clientHeight);
+  const aspect = w / h;
+  camera.aspect = aspect;
+  camera.updateProjectionMatrix();
+  const vFov = (camera.fov * Math.PI) / 180;
+  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
+  const halfW = 2.15 + 1.75 * t;
+  const halfH = 1.55 + 1.0 * t;
+  const dist = Math.max(halfW / Math.tan(hFov / 2), halfH / Math.tan(vFov / 2));
+  camera.position.copy(controls.target).addScaledVector(homeDir, dist);
+  camera.lookAt(controls.target);
+}
+controls.addEventListener('start', () => {
+  userMoved = true;
+  controls.enableDamping = true;
+});
+
+let toOpen = false;
+let fromT = 0;
+let tweenStart = performance.now();
+function explodeValue(now) {
+  const dur = reduceMotion ? 1 : 920;
+  const u = Math.min(1, (now - tweenStart) / dur);
+  const e = u < 0.5 ? 4 * u * u * u : 1 - ((-2 * u + 2) ** 3) / 2;
+  return fromT + ((toOpen ? 1 : 0) - fromT) * e;
+}
+function pose(t, now) {
+  partGroups.forEach((g) => {
+    const bob = Math.sin(now * 0.0022 + g.userData.phase) * 0.04 * t;
+    g.position.copy(g.userData.home).addScaledVector(g.userData.offset, t);
+    g.position.y += bob;
+    const hr = g.userData.homeRot;
+    const orot = g.userData.openRot;
+    let z = hr.z + orot.z * t;
+    if (g.userData.sway) z += Math.sin(now * 0.003 + g.userData.phase) * 0.14 * (1 - t * 0.35);
+    g.rotation.set(hr.x + orot.x * t, hr.y + orot.y * t, z);
+    const on = isLit(g);
+    g.scale.setScalar(on ? 1.07 : 1);
+    if (g.userData.wing) {
+      const fade = Math.min(1, Math.max(0, (t - 0.1) / 0.45));
+      g.visible = fade > 0.04;
+    }
+    g.traverse((o) => {
+      if (!o.isMesh || !o.material || o.userData.hitbox) return;
+      const mats = [].concat(o.material);
+      mats.forEach((m) => {
+        if (m.userData.isWing) m.opacity = 0.28 + 0.6 * Math.min(1, Math.max(0, (t - 0.1) / 0.45));
+        if (!m.emissive) return;
+        if (on) {
+          m.emissive.set(0xffe45a);
+          m.emissiveIntensity = 0.55 + Math.sin(now * 0.006 + g.userData.phase) * 0.22;
+          m.userData.wasLit = true;
+        } else if (m.userData.wasLit) {
+          m.emissive.copy(m.userData.baseEmissive);
+          m.emissiveIntensity = m.userData.baseIntensity;
+          m.userData.wasLit = false;
+        }
+      });
+    });
+  });
+  const sun = scene.userData.sun;
+  if (sun) sun.rotation.z = now * 0.00035;
+  (scene.userData.clouds || []).forEach((cloud) => {
+    cloud.position.x = cloud.userData.baseX + Math.sin(now * 0.00018 + cloud.userData.phase) * 0.25;
+  });
+}
+
+function resize() {
+  const w = stage.clientWidth;
+  const h = stage.clientHeight;
+  renderer.setSize(Math.max(1, w), Math.max(1, h), false);
+  camera.aspect = w / Math.max(1, h);
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const pointers = new Set();
+let multi = false;
+let down = null;
+canvas.addEventListener('pointerdown', (e) => {
+  pointers.add(e.pointerId);
+  if (pointers.size > 1) multi = true;
+  down = { x: e.clientX, y: e.clientY };
+});
+canvas.addEventListener('pointercancel', (e) => pointers.delete(e.pointerId));
+canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+canvas.addEventListener('pointerup', (e) => {
+  pointers.delete(e.pointerId);
+  if (pointers.size > 0) return;
+  const wasMulti = multi;
+  multi = false;
+  if (wasMulti || !down) return;
+  const dx = e.clientX - down.x;
+  const dy = e.clientY - down.y;
+  down = null;
+  if (dx * dx + dy * dy > 12 * 12) return;
+  const rect = canvas.getBoundingClientRect();
+  pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  const hits = raycaster.intersectObjects(pickables, false).filter((hit) => {
+    for (let o = hit.object; o; o = o.parent) if (o.visible === false) return false;
+    return true;
+  });
+  if (!hits.length) return;
+  const root = hits[0].object.userData.partRoot;
+  if (root) select(root);
+});
+
+function select(group) {
+  selected = group;
+  const info = INFO[group.userData.infoKey];
+  document.body.dataset.part = group.userData.infoKey;
+  if (quiz && quiz.active) {
+    showInfo(info);
+    judge(group.userData.partId);
+    return;
+  }
+  if (quiz && !quiz.active) {
+    quizBlock.hidden = true;
+    setRubyButton(quizBtn, BTN.quiz[0], BTN.quiz[1]);
+    quizBtn.setAttribute('aria-pressed', 'false');
+    quiz = null;
+    document.body.dataset.quiz = 'off';
+  }
+  showInfo(info);
+  speakParts([info.speech]);
+}
+
+function cheer() {
+  if (reduceMotion) return;
+  for (let i = 0; i < 6; i++) {
+    const el = document.createElement('div');
+    el.className = 'cheer';
+    el.textContent = ['⭐', '🌟', '✨'][i % 3];
+    el.style.left = (28 + ((i * 17) % 48)) + '%';
+    el.style.animationDelay = (i * 0.05) + 's';
+    stage.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+}
+
+function showQuestion(doSpeak) {
+  selected = null;
+  nameEl.hidden = true;
+  blurb.hidden = true;
+  const q = QUESTIONS[quiz.i];
+  quiz.wrong = false;
+  quiz.locked = false;
+  quizLabel.textContent = '第 ' + (quiz.i + 1) + ' 題，共 ' + QUESTIONS.length + ' 題';
+  quizAsk.textContent = q.ask;
+  quizHint.textContent = q.tip;
+  quizHint.classList.remove('bad');
+  document.body.dataset.part = '';
+  if (doSpeak) speakParts([q.ask]);
+}
+function finishQuiz() {
+  const n = quiz.score;
+  quiz.active = false;
+  quizLabel.textContent = '問答結束';
+  quizAsk.textContent = '五題裡答對 ' + n + ' 題';
+  quizHint.textContent = n >= 4 ? '你真的看清楚了！' : '再玩一次，會更熟喔。';
+  quizHint.classList.remove('bad');
+  const ruby = n === 5
+    ? [['全','ㄑㄩㄢˊ'],['對','ㄉㄨㄟˋ'],['了','˙ㄌㄜ']]
+    : n >= 4
+      ? [['好','ㄏㄠˇ'],['棒','ㄅㄤˋ']]
+      : [['再','ㄗㄞˋ'],['試','ㄕˋ'],['一','ㄧˊ'],['次','ㄘˋ']];
+  nameEl.hidden = false;
+  blurb.hidden = false;
+  nameEl.innerHTML = rubyHTML(ruby);
+  blurb.textContent = n >= 4
+    ? '六隻腳都長在胸部，紅色硬殼是前翅。'
+    : '可以再玩一次，找找觸角、複眼、胸部、前翅和腹部。';
+  currentSpeech = '問答結束。五題裡，你答對了' + CN[n] + '題。';
+  setRubyButton(quizBtn, BTN.again[0], BTN.again[1]);
+  quizBtn.setAttribute('aria-pressed', 'false');
+  document.body.dataset.quiz = 'done';
+  document.body.dataset.score = String(n);
+}
+function judge(partId) {
+  if (!quiz || !quiz.active || quiz.locked) return;
+  const q = QUESTIONS[quiz.i];
+  if (partId === q.part) {
+    if (!quiz.wrong) quiz.score += 1;
+    quiz.locked = true;
+    cheer();
+    quizHint.textContent = q.ok;
+    quizHint.classList.remove('bad');
+    const token = quiz.token;
+    const next = QUESTIONS[quiz.i + 1];
+    if (next) speakParts([q.ok, next.ask]);
+    else speakParts([q.ok + '問答結束。五題裡，你答對了' + CN[quiz.score] + '題。']);
+    setTimeout(() => {
+      if (!quiz || quiz.token !== token || !quiz.active) return;
+      if (!next) finishQuiz();
+      else {
+        quiz.i += 1;
+        showQuestion(false);
+      }
+    }, 1500);
+  } else {
+    quiz.wrong = true;
+    quizHint.textContent = q.hint;
+    quizHint.classList.add('bad');
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+    speakParts(['再找找。' + q.hint]);
+  }
+}
+function startQuiz() {
+  quiz = { active: true, i: 0, score: 0, wrong: false, locked: false, token: 1 };
+  quizBlock.hidden = false;
+  setRubyButton(quizBtn, BTN.stop[0], BTN.stop[1]);
+  quizBtn.setAttribute('aria-pressed', 'true');
+  document.body.dataset.quiz = 'on';
+  document.body.dataset.score = '';
+  showQuestion(true);
+}
+function stopQuiz() {
+  if (quiz) quiz.token += 1;
+  quiz = null;
+  quizBlock.hidden = true;
+  setRubyButton(quizBtn, BTN.quiz[0], BTN.quiz[1]);
+  quizBtn.setAttribute('aria-pressed', 'false');
+  document.body.dataset.quiz = 'off';
+  if (nameEl.hidden) showIntro();
+  speakParts(['問答先停下來。你可以再點點看。']);
+}
+
+explodeBtn.addEventListener('click', () => {
+  fromT = explodeValue(performance.now());
+  toOpen = !toOpen;
+  tweenStart = performance.now();
+  explodeBtn.setAttribute('aria-pressed', String(toOpen));
+  document.body.dataset.explode = toOpen ? 'open' : 'closed';
+  const spec = toOpen ? BTN.close : BTN.open;
+  setRubyButton(explodeBtn, spec[0], spec[1]);
+});
+quizBtn.addEventListener('click', () => {
+  if (quiz && quiz.active) stopQuiz();
+  else startQuiz();
+});
+speakBtn.addEventListener('click', () => {
+  if (quiz && quiz.active) {
+    const q = QUESTIONS[quiz.i];
+    speakParts([q.ask + (quiz.wrong ? q.hint : '')]);
+  } else speakParts([currentSpeech]);
+});
+
+showIntro();
+
+let raf = 0;
+let running = true;
+let showed = false;
+function loop(now) {
+  if (!running) return;
+  const t = explodeValue(now);
+  pose(t, now);
+  if (!userMoved) frameCamera(t);
+  controls.update();
+  renderer.render(scene, camera);
+  if (!showed && stage.clientHeight > 40) {
+    showed = true;
+    loading.hidden = true;
+    document.body.dataset.ready = '1';
+  }
+  raf = requestAnimationFrame(loop);
+}
+raf = requestAnimationFrame(loop);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    running = false;
+    cancelAnimationFrame(raf);
+  } else if (!running) {
+    running = true;
+    raf = requestAnimationFrame(loop);
+  }
+});
+</script>
+<script>
+setTimeout(() => {
+  const el = document.getElementById('loading');
+  if (el && !el.hidden) el.textContent = '請重新整理一次。需要網路才能把瓢蟲畫出來。';
+}, 12000);
+</script>
+<noscript>這個頁面需要開啟 JavaScript，才能看到可以拆開的瓢蟲。</noscript>
+</body>
+</html>
